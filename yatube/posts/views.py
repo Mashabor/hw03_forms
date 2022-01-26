@@ -13,7 +13,7 @@ def authorized_only(func):
             # Возвращает view-функцию, если пользователь авторизован.
             return func(request, *args, **kwargs)
         # Если пользователь не авторизован — отправим его на страницу логина.
-        return redirect('/auth/login/')        
+        return redirect('/auth/login/')
     return check_user
 
 
@@ -35,7 +35,6 @@ def index(request):
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     post_list = group.posts.all()
-    posts = group.posts.all()[:POSTS_COUNT]
     paginator = Paginator(post_list, POSTS_COUNT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -91,18 +90,18 @@ def post_create(request):
         'form': form,
     }
     return render(request, template, context)
-    
+
 
 @authorized_only
 def post_edit(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if post.author != request.user:
-        return redirect ('posts:post_detail', post_id=post_id)
+        return redirect('posts:post_detail', post_id=post_id)
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             post.save()
-            return redirect ('posts:post_detail', post.pk)
+            return redirect('posts:post_detail', post.pk)
     else:
         form = PostForm(instance=post)
         template = 'posts/post_create.html'
