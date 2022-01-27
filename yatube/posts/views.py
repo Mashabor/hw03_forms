@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
 from .models import Post, Group, User
@@ -13,7 +12,6 @@ POSTS_COUNT = 10
 # Главная страница
 def index(request):
     posts = Post.objects.select_related('author', 'group')[:POSTS_COUNT]
-    post_list = Post.objects.all()
     page_obj, total_count = get_paginator(Post.objects.all(), request)
     context = {
         'posts': posts,
@@ -26,7 +24,6 @@ def index(request):
 # Страница со списком опубликованных постов
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = group.posts.all()
     page_obj, total_count = get_paginator(group.posts.all(), request)
     context = {
         'group': group,
@@ -39,7 +36,6 @@ def group_posts(request, slug):
 # Здесь код запроса к модели и создание словаря контекста
 def profile(request, username):
     author_name = get_object_or_404(User, username=username)
-    post_list = author_name.posts.all()
     page_obj, posts_amount = get_paginator(author_name.posts.all(), request)
     context = {
         'author': author_name,
