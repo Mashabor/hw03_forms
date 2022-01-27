@@ -1,7 +1,6 @@
 from django.core.paginator import Paginator
 
-
-POSTS_COUNT = 10
+from .conf import POSTS_COUNT
 
 
 def get_paginator(queryset, request):

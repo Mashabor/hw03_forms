@@ -4,9 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Post, Group, User
 from .forms import PostForm
 from .utils import get_paginator
-
-
-POSTS_COUNT = 10
+from .conf import POSTS_COUNT
 
 
 # Главная страница
@@ -61,7 +59,7 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    request.POST or None
+    PostForm(request.POST or None)
     form = PostForm(request.POST)
     if form.is_valid():
         form = form.save(commit=False)
@@ -81,7 +79,7 @@ def post_edit(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if post.author != request.user:
         return redirect('posts:post_detail', post_id=post_id)
-    request.POST or None
+    PostForm(request.POST or None)
     form = PostForm(request.POST, instance=post)
     if form.is_valid():
         form.save()
