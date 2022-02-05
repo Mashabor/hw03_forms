@@ -12,9 +12,7 @@ def index(request):
     posts = Post.objects.select_related('author', 'group')[:POSTS_COUNT]
     page_obj, total_count = get_paginator(Post.objects.all(), request)
     context = {
-        'posts': posts,
-        'page_obj': page_obj,
-        'total_count': total_count
+        'page_obj': page_obj
     }
     return render(request, 'posts/index.html', context)
 
@@ -25,8 +23,7 @@ def group_posts(request, slug):
     page_obj, total_count = get_paginator(group.posts.all(), request)
     context = {
         'group': group,
-        'page_obj': page_obj,
-        'total_count': total_count
+        'page_obj': page_obj
     }
     return render(request, 'posts/group_list.html', context)
 
@@ -52,7 +49,7 @@ def post_detail(request, post_id):
     context = {
         'title': title,
         'post': full_post,
-        'posts_amount': posts_amount,
+        'posts_amount': posts_amount
     }
     return render(request, 'posts/post_detail.html', context)
 
