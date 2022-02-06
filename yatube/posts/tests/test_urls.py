@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 from ..models import Post, Group
 
@@ -40,6 +41,20 @@ class PostURLTests(TestCase):
                     self.assertEqual(response.status_code, 404)
                 else:
                     self.assertEqual(response.status_code, 200)
+
+    def test_create_url_redirect_guest_client(self):
+        url = reverse('posts:post_create')
+        response = self.guest_client.get(url)
+        self.assertRedirects(
+        response, '/auth/login/?next=/create/'
+        )
+
+    def test_edit_url_redirect_guest_client(self):
+        url = reverse('posts:post_edit', kwargs={'post_id': '1'})
+        response = self.guest_client.get(url)
+        self.assertRedirects(
+        response, '/auth/login/?next=/posts/1/edit/'
+        )
 
         templates_url_names_authorized = {
             '/': 'posts/index.html',
