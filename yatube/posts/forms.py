@@ -5,12 +5,12 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('text', 'group')
+        fields = '__all__'
         labels = {
-            'text': 'Напишите ваш текст здесь',
-            'group': 'Выберите группу'
+            'text': 'Текст поста',
+            'group': 'Группа'
         }
         help_texts = {
-            'text': 'Чем вы хотите поделиться',
-            'group': 'Список групп'
+            'text': 'Введите текст поста',
+            'group': 'Выберите группу'
         }
