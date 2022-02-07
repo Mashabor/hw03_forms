@@ -117,3 +117,30 @@ class PostViewsTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
+
+    class PaginatorViewsTest(TestCase):
+        def test_first_page_index_contains_ten_records(self):
+            response = self.client.get(reverse('index'))
+            self.assertEqual(len(response.context['object_list']), 10)
+
+        def test_second_page_index_contains_three_records(self):
+            response = self.client.get(reverse('index') + '?page=2')
+            self.assertEqual(len(response.context['object_list']), 3)
+
+        def test_first_page_group_posts_contains_ten_records(self):
+            response = self.client.get(reverse('posts:group_posts')) 
+            self.assertEqual(len(response.context['object_list']), 10)
+
+        def test_second_page_group_posts_contains_three_records(self):
+            response = self.client.get(reverse('posts:group_posts') + '?page=2')
+            self.assertEqual(len(response.context['object_list']), 3)
+
+        def test_first_page_profile_contains_ten_records(self):
+            response = self.client.get(reverse('posts:profile'))
+            self.assertEqual(len(response.context['object_list']), 10)
+
+        def test_second_page_profile_contains_three_records(self):
+            response = self.client.get(reverse('posts:profile') + '?page=2')
+            self.assertEqual(len(response.context['object_list']), 3)
+
+    
