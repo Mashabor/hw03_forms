@@ -8,6 +8,7 @@ from ..models import Post, Group
 User = get_user_model()
 
 class PostViewsTests(TestCase):
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -17,15 +18,44 @@ class PostViewsTests(TestCase):
             description='test-description',
             slug='test-slug'
         )
-        cls.post = Post.objects.create(
-            author=cls.user,
-            group=cls.group,
-            text='test-text',
-            pub_date='04.02.2022'
-        )
+        for i in range(1, 13):
+            cls.post = Post.objects.create(
+                author=cls.user,
+                group=cls.group,
+                text='test-text' + str(i),
+                pub_date='04.02.2022'
+            )
 
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
+
+    def check_post_in_page(self, url, text, user, group):
+        response = self.authorized_client.get(url)
+        self.assertEqual(self.post.text, 'test-text12')
+        self.assertEqual(self.post.author, self.user)
+        self.assertEqual(self.post.group, self.group)
+
+    def test_post_appears_on_pages(self):
+
+        self.group1 = Group.objects.create(title="test", slug="test1")
+
+        self.post2 = Post.objects.create(
+            text='Test text',
+            author=self.user,
+            group=self.group1
+        )
+
+        urls = (reverse('posts:index'),
+                reverse('posts:profile', kwargs={'username': 'TrueName'}),
+                reverse('posts:group_posts', kwargs={'slug': 'test-slug'}),
+                )
+
+        for url in urls:
+            with self.subTest(url=url):
+                self.check_post_in_page(url, 'Test text', self.user,
+                self.group1
+                )
+
 
     def test_pages_uses_correct_template(self):
         templates_pages_names = {
@@ -60,7 +90,7 @@ class PostViewsTests(TestCase):
         self.assertEqual(
             response.context['page_obj']
             [0].text,
-            'test-text'
+            'test-text12'
         )
         self.assertEqual(
             response.context['page_obj']
@@ -81,7 +111,7 @@ class PostViewsTests(TestCase):
         self.assertEqual(
             response.context['page_obj']
             [0].text,
-            'test-text'
+            'test-text12'
         )
         self.assertEqual(
             response.context['page_obj']
@@ -92,7 +122,7 @@ class PostViewsTests(TestCase):
 
     def test_post_detail_page_show_correct_context(self):
         response = self.authorized_client.get(reverse(
-            'posts:post_detail', kwargs={'post_id': '1'}
+            'posts:post_detail', kwargs={'post_id': '12'}
         ))
         self.assertEqual(response.context['post'], self.post)
 
@@ -143,4 +173,4 @@ class PostViewsTests(TestCase):
             response = self.client.get(reverse('posts:profile') + '?page=2')
             self.assertEqual(len(response.context['object_list']), 3)
 
-    
+
